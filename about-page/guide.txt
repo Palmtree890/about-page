@@ -1,0 +1,27 @@
+<!-- linking the css file -->
+<!-- Place this in the <head> section of every HTML page -->
+<link rel="stylesheet" href="/style.css">
+
+<!-- linking the js file -->
+<!-- Place this just before the closing </body> tag on every HTML page -->
+<script src="/script.js"></script>
+
+<!-- The cursor grid container should also be added in the body if you want the trail on this page -->
+    <div id="cursor-grid-container"></div>
+
+<!-- Buttons should use the new CSS classes, e.g.: -->
+    <button class="color-button color-button-primary">Click Me</button>
+
+<!-- linking the button to another page on the site -->
+<a href="/about.html" class="color-button color-button-primary">About Us</a>
+
+<!-- linking the button to an external site -->
+<a href="https://example.com" class="color-button color-button-primary">Go to Example Site</a>
+
+<!-- linking the button to A Section on the Same Page -->
+<a href="#section-id" class="color-button color-button-primary">Jump to Section</a>
+
+<!-- Simplified, cleaner approach for the homepage link example -->
+<a href="https://palmtree890.github.io/Blocksi-sucks/index.html" class="color-button color-button-danger">
+  Go to the homepage
+</a>
