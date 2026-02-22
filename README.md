@@ -3,4 +3,5 @@ The about page for my website [palmtree.technology](https://palmtree.technology)
 - search engine (using searxng)
 - my lost swan station project.
 - My bio
-- other awesome stuff 😀
+- other awesome stuff 👍
+
