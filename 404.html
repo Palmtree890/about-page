@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | palmtree</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020617;
+            background-image:
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            color: #f8fafc;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        /* ── Custom Cursor ── */
+        #cursor-dot {
+            width: 4px; height: 4px;
+            background-color: #38bdf8;
+            position: fixed; border-radius: 50%;
+            z-index: 1000; pointer-events: none;
+            transition: transform 0.05s linear;
+        }
+        #cursor-shape {
+            width: 24px; height: 24px;
+            position: fixed; z-index: 999;
+            pointer-events: none;
+            transition: transform 0.15s ease-out;
+            display: flex; align-items: center; justify-content: center;
+            filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));
+        }
+        #cursor-glow {
+            position: fixed; top: 0; left: 0;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+        .cursor-active #cursor-shape {
+            transform: translate(-50%, -50%) scale(1.3);
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+        }
+        a, button, .interactable { cursor: none; }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 10;
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(56, 189, 248, 0.1);
+        }
+
+        /* ── Fade-in ── */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── 404 glitch number ── */
+        .glitch {
+            position: relative;
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(6rem, 20vw, 10rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            text-shadow:
+                0 0 40px rgba(56, 189, 248, 0.4),
+                0 0 80px rgba(56, 189, 248, 0.15);
+            user-select: none;
+        }
+
+        /* Animated scanline sweep across the 404 number */
+        .glitch::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                transparent 0%,
+                rgba(56, 189, 248, 0.06) 50%,
+                transparent 100%
+            );
+            background-size: 100% 8px;
+            animation: scanline 3s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            from { background-position: 0 -100%; }
+            to   { background-position: 0 200%; }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen py-12 px-6">
+
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-shape">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M3 3L10 21L13 13L21 10L3 3Z"
+                  stroke="rgba(56, 189, 248, 0.8)"
+                  stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+    </div>
+    <div id="cursor-glow"></div>
+
+    <!-- Main content -->
+    <div class="max-w-2xl w-full z-10 fade-in">
+        <div class="glass-card p-10 rounded-[2rem] flex flex-col items-center text-center gap-6">
+
+            <!-- Big 404 -->
+            <div class="glitch">404</div>
+
+            <!-- Icon -->
+            <div class="bg-red-500/10 p-4 rounded-2xl border border-red-500/20 -mt-2">
+                <i data-lucide="file-x" class="w-8 h-8 text-red-400"></i>
+            </div>
+
+            <!-- Heading -->
+            <div>
+                <h1 class="text-2xl font-bold text-white tracking-tight mb-2">Page Not Found</h1>
+                <p class="text-slate-500 text-sm code-font">error/route_not_resolved</p>
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-400 text-sm leading-relaxed max-w-md">
+                The path you requested doesn't exist on
+                <span class="text-white font-semibold">palmtree.technology</span>.
+                It may have been moved, deleted, or you may have followed a broken link.
+            </p>
+
+            <!-- Divider -->
+            <div class="w-full h-px bg-white/5"></div>
+
+            <!-- Suggested links -->
+            <div class="w-full grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <a href="index.html" class="glass-card flex flex-col items-center gap-2 p-4 rounded-[1.5rem] hover:border-sky-500/30 interactable">
+                    <div class="bg-sky-500/10 p-2 rounded-xl border border-sky-500/20">
+                        <i data-lucide="home" class="w-5 h-5 text-sky-400"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-200">Home</span>
+                    <span class="text-[10px] text-slate-500 code-font">index.html</span>
+                </a>
+                <a href="project.html" class="glass-card flex flex-col items-center gap-2 p-4 rounded-[1.5rem] hover:border-emerald-500/30 interactable">
+                    <div class="bg-emerald-500/10 p-2 rounded-xl border border-emerald-500/20">
+                        <i data-lucide="folder-kanban" class="w-5 h-5 text-emerald-400"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-200">Projects</span>
+                    <span class="text-[10px] text-slate-500 code-font">project.html</span>
+                </a>
+                <a href="extras.html" class="glass-card flex flex-col items-center gap-2 p-4 rounded-[1.5rem] hover:border-purple-500/30 interactable">
+                    <div class="bg-purple-500/10 p-2 rounded-xl border border-purple-500/20">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-200">Extras</span>
+                    <span class="text-[10px] text-slate-500 code-font">extras.html</span>
+                </a>
+            </div>
+
+            <!-- Back button -->
+            <button onclick="history.back()" class="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-sky-500/10 hover:border-sky-500/30 hover:text-white transition-all interactable">
+                <i data-lucide="arrow-left" class="w-4 h-4 text-sky-400"></i>
+                Go Back
+            </button>
+
+        </div>
+
+        <!-- Footer label -->
+        <p class="text-center text-slate-600 text-[10px] uppercase tracking-[0.4em] mt-8 code-font">
+            palmtree_technology / 404
+        </p>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => lucide.createIcons());
+
+        // ── Custom cursor ──
+        const dot   = document.getElementById('cursor-dot');
+        const shape = document.getElementById('cursor-shape');
+        const glow  = document.getElementById('cursor-glow');
+
+        window.addEventListener('mousemove', (e) => {
+            dot.style.left   = shape.style.left   = `${e.clientX}px`;
+            dot.style.top    = shape.style.top    = `${e.clientY}px`;
+            dot.style.transform = shape.style.transform = 'translate(-50%, -50%)';
+            glow.style.left  = `${e.clientX}px`;
+            glow.style.top   = `${e.clientY}px`;
+        });
+
+        document.querySelectorAll('.interactable, a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
+        });
+    </script>
+</body>
+</html>
