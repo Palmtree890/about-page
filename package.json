@@ -1,0 +1,25 @@
+{
+  "name": "about-page",
+  "version": "1.0.0",
+  "description": "The about page for my website [palmtree.technology](https://palmtree.technology). i have listed stuff such as:\r - search engine (using searxng)\r - my lost swan station project.\r - My bio\r - other awesome stuff 👍",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Palmtree890/about-page.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Palmtree890/about-page/issues"
+  },
+  "homepage": "https://github.com/Palmtree890/about-page#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "tailwindcss": "^4.2.2"
+  }
+}
