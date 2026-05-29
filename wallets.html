@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script defer src="https://umami.palmtree.technology/script.js" data-website-id="6029c834-2e2b-455b-9c89-b88060288c45"></script>
+    <meta http-equiv="onion-location" content="http://xvl4binhyztrh4snqnsldyr2nsvgpatgoe7wxfy3owwo4gdelhkmwlyd.onion/" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Other Wallets | palmtree</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020617;
+            background-image:
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            color: #f8fafc;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        /* ── Custom Cursor ── */
+        #cursor-dot {
+            width: 4px; height: 4px;
+            background-color: #38bdf8;
+            position: fixed; border-radius: 50%;
+            z-index: 1000; pointer-events: none;
+            transition: transform 0.05s linear;
+        }
+        #cursor-shape {
+            width: 24px; height: 24px;
+            position: fixed; z-index: 999;
+            pointer-events: none;
+            transition: transform 0.15s ease-out;
+            display: flex; align-items: center; justify-content: center;
+            filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.5));
+        }
+        #cursor-glow {
+            position: fixed; top: 0; left: 0;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%); z-index: 0;
+        }
+        .cursor-active #cursor-shape {
+            transform: translate(-50%, -50%) scale(1.3);
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+        }
+        a, button, .interactable { cursor: none; }
+
+        /* ── Wallet card (accent driven by --accent / --accent-rgb) ── */
+        .wallet-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(var(--accent-rgb), 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 0 0 60px rgba(var(--accent-rgb), 0.04);
+            position: relative;
+            z-index: 10;
+        }
+        .wallet-card:hover {
+            border-color: rgba(var(--accent-rgb), 0.45);
+            box-shadow: 0 10px 40px rgba(var(--accent-rgb), 0.08);
+        }
+
+        /* ── Address box ── */
+        .address-box {
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(var(--accent-rgb), 0.15);
+            border-radius: 1rem;
+            padding: 1rem 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--accent);
+            word-break: break-all;
+            line-height: 1.8;
+        }
+
+        /* ── Fade-in ── */
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-delay   { animation: fadeIn 0.8s ease-out 0.12s both; }
+        .fade-in-delay-2 { animation: fadeIn 0.8s ease-out 0.24s both; }
+        .fade-in-delay-3 { animation: fadeIn 0.8s ease-out 0.36s both; }
+        .fade-in-delay-4 { animation: fadeIn 0.8s ease-out 0.48s both; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%;
+            transform: translateX(-50%) translateY(4rem);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8; padding: 0.6rem 1.4rem;
+            border-radius: 999px; font-size: 0.75rem;
+            font-weight: 600; letter-spacing: 0.05em;
+            z-index: 9999;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="flex flex-col items-center py-12 px-6">
+
+    <!-- Custom cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-shape">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M3 3L10 21L13 13L21 10L3 3Z"
+                  stroke="rgba(56, 189, 248, 0.8)"
+                  stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+    </div>
+    <div id="cursor-glow"></div>
+    <div class="toast" id="toast"></div>
+
+    <div class="max-w-2xl w-full z-10">
+
+        <!-- ── Header ── -->
+        <div class="flex items-center gap-4 mb-6 fade-in">
+            <a href="donate.html" class="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-sky-500/10 hover:border-sky-500/30 transition-all interactable">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-sky-400"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Other Wallets</h1>
+                <p class="text-slate-500 text-sm code-font">palmtree_technology/donate/wallets</p>
+            </div>
+        </div>
+
+        <p class="text-slate-400 text-sm leading-relaxed mb-10 fade-in">
+            Prefer to donate in another currency? These are my non-Monero wallets. Monero is still the most private option —
+            <a href="donate.html" class="text-orange-400 hover:text-orange-300 underline decoration-orange-500/40 underline-offset-2 transition-colors interactable">see the donate page</a>
+            if privacy matters to you.
+        </p>
+
+        <!-- ── Bitcoin ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay" style="--accent:#fdba74; --accent-rgb:247,147,26;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(247,147,26,0.1); border:1px solid rgba(247,147,26,0.2);">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10.5" stroke="#f7931a" stroke-width="1.2" fill="rgba(247,147,26,0.06)"/>
+                        <path d="M9 7v10M11 7v10M9.5 7h3.2c1.4 0 2.3.8 2.3 2.1 0 1.3-.9 2.1-2.3 2.1H9.5m0 0h3.6c1.5 0 2.5.9 2.5 2.3 0 1.4-1 2.4-2.5 2.4H9.5M10.5 5.5v1.5M13 5.5v1.5M10.5 17v1.5M13 17v1.5" stroke="#f7931a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Bitcoin</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">BTC · On-Chain</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#fdba74; background:rgba(247,147,26,0.1); border:1px solid rgba(247,147,26,0.2);">BTC</span>
+            </div>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="btc-address">15PpcR48QGrBLotqLNpv8WSesqBuFPAZBm</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('btc-address', 'BTC', '#f7931a')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(247,147,26,0.1); border:1px solid rgba(247,147,26,0.2); color:#fdba74;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real BTC address -->
+                <a href="bitcoin:bc1qexampleexampleexampleexampleexampleexampl0" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#f7931a;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+        </div>
+
+        <!-- ── Ethereum ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay-2" style="--accent:#a5b4fc; --accent-rgb:98,126,234;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(98,126,234,0.1); border:1px solid rgba(98,126,234,0.2);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3L6 12.2 12 15.8 18 12.2 12 3Z" stroke="#818cf8" stroke-width="1.2" stroke-linejoin="round" fill="rgba(98,126,234,0.08)"/>
+                        <path d="M6 13.4L12 17 18 13.4 12 21 6 13.4Z" stroke="#818cf8" stroke-width="1.2" stroke-linejoin="round" fill="rgba(98,126,234,0.04)"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Ethereum</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">ETH · ERC-20</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#a5b4fc; background:rgba(98,126,234,0.1); border:1px solid rgba(98,126,234,0.2);">ETH</span>
+            </div>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="eth-address">0xc741f31496411bBA6FeF85477433551D3933Bf8c</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('eth-address', 'ETH', '#818cf8')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(98,126,234,0.1); border:1px solid rgba(98,126,234,0.2); color:#a5b4fc;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real ETH address -->
+                <a href="ethereum:0xExAmPLE0000000000000000000000000000000000" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#818cf8;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+            <p class="text-slate-600 text-[11px] mt-3">Accepts ETH and any ERC-20 token on Ethereum mainnet.</p>
+        </div>
+
+        <!-- ── Litecoin ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay-3" style="--accent:#7dd3fc; --accent-rgb:52,93,157;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(52,93,157,0.12); border:1px solid rgba(52,93,157,0.3);">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10.5" stroke="#60a5fa" stroke-width="1.2" fill="rgba(52,93,157,0.1)"/>
+                        <path d="M11 6.5L9 14.2M8 12.4l8-1.9M9.2 17.5h7" stroke="#93c5fd" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Litecoin</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">LTC · On-Chain</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#93c5fd; background:rgba(52,93,157,0.12); border:1px solid rgba(52,93,157,0.3);">LTC</span>
+            </div>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="ltc-address">LgDMHZJprHhVvzMcbw1cTdq9zGsgtUpg3o</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('ltc-address', 'LTC', '#60a5fa')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(52,93,157,0.12); border:1px solid rgba(52,93,157,0.3); color:#93c5fd;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real LTC address -->
+                <a href="litecoin:ltc1qexampleexampleexampleexampleexampleexam0" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#60a5fa;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+        </div>
+
+        <!-- ── Solana ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay-4" style="--accent:#5eead4; --accent-rgb:20,241,149;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(20,241,149,0.08); border:1px solid rgba(20,241,149,0.2);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 7.5h10l-2.2 2.2H4.8L7 7.5Z" fill="#2dd4bf"/>
+                        <path d="M7 11.4h10l-2.2 2.2H4.8L7 11.4Z" fill="#5eead4"/>
+                        <path d="M7 15.3h10l-2.2 2.2H4.8L7 15.3Z" fill="#99f6e4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Solana</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">SOL · SPL Tokens</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#5eead4; background:rgba(20,241,149,0.08); border:1px solid rgba(20,241,149,0.2);">SOL</span>
+            </div>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="sol-address">DMdxL95BXsRcfq6Gx8Xn8xBAfsfj3ySdwoQNu92xxUMr</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('sol-address', 'SOL', '#2dd4bf')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(20,241,149,0.08); border:1px solid rgba(20,241,149,0.2); color:#5eead4;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real SOL address -->
+                <a href="solana:SoLExampLeExampLeExampLeExampLeExampLeExam111" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#2dd4bf;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+            <p class="text-slate-600 text-[11px] mt-3">Accepts SOL and SPL tokens. Send only Solana-network assets to this address.</p>
+        </div>
+
+        <!-- ── Dogecoin ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay-4" style="--accent:#fde68a; --accent-rgb:194,166,51;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(194,166,51,0.1); border:1px solid rgba(194,166,51,0.25);">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10.5" stroke="#d4af37" stroke-width="1.2" fill="rgba(194,166,51,0.08)"/>
+                        <path d="M8.5 7.5h3.4c2.4 0 4 1.8 4 4.5s-1.6 4.5-4 4.5H8.5M7 12h4" stroke="#e9c75a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Dogecoin</h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">DOGE · On-Chain</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#fde68a; background:rgba(194,166,51,0.1); border:1px solid rgba(194,166,51,0.25);">DOGE</span>
+            </div>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="doge-address">DGVRrboXbKU3S5gZYTKwrZRkeD98RNYqCi</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('doge-address', 'DOGE', '#d4af37')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(194,166,51,0.1); border:1px solid rgba(194,166,51,0.25); color:#fde68a;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real DOGE address -->
+                <a href="dogecoin:DExampLeExampLeExampLeExampLeExampLe00" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#d4af37;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+        </div>
+
+        <!-- ── Backup Monero ── -->
+        <div class="wallet-card p-8 rounded-[2rem] mb-6 fade-in-delay-4" style="--accent:#fdba74; --accent-rgb:255,102,0;">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(255,102,0,0.1); border:1px solid rgba(255,102,0,0.2);">
+                    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                        <circle cx="13" cy="13" r="12" stroke="#f97316" stroke-width="1.2" fill="rgba(249,115,22,0.06)"/>
+                        <path d="M7 18V10L13 16L19 10V18" stroke="#f97316" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+                        <path d="M10 18V14" stroke="#f97316" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M16 18V14" stroke="#f97316" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Monero <span class="text-slate-500 font-normal text-base">(backup)</span></h2>
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">XMR · Secondary Wallet</p>
+                </div>
+                <span class="ml-auto text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full" style="color:#fdba74; background:rgba(255,102,0,0.1); border:1px solid rgba(255,102,0,0.2);">XMR</span>
+            </div>
+
+            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                A secondary Monero address — use this if the
+                <a href="donate.html" class="text-orange-400 hover:text-orange-300 transition-colors interactable">primary wallet</a>
+                is ever unavailable. Same privacy guarantees apply.
+            </p>
+
+            <label class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2 block">Wallet Address</label>
+            <div class="address-box wallet-address" id="xmr-backup-address">45kVLX2mwAhcVLJx2mvGse5GKrcowQkkMCVV5NjTKLszDrj4Po3QMB9j7cbQNu4MgREKNDafti1fUbixEVgyHNAHEHPKc5Z</div>
+
+            <div class="flex gap-3 mt-4">
+                <button onclick="copyAddr('xmr-backup-address', 'backup XMR', '#f97316')" class="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-2xl transition-all interactable" style="background:rgba(255,102,0,0.1); border:1px solid rgba(255,102,0,0.2); color:#fdba74;">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Copy Address
+                </button>
+                <!-- ✏ REPLACE address in href with your real backup XMR address -->
+                <a href="monero:4AAAAreplace_this_with_your_real_backup_monero_wallet_address_hereAAAA" class="flex items-center justify-center gap-2 px-5 py-3 text-black text-xs font-bold rounded-2xl hover:scale-105 transition-transform interactable" style="background:#f97316;">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Open Wallet
+                </a>
+            </div>
+
+            <div class="mt-6 p-4 bg-black/30 border border-amber-500/15 rounded-xl flex items-start gap-3">
+                <i data-lucide="flame" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+                <p class="text-slate-500 text-xs leading-relaxed">
+                    Heads up: this is a <span class="text-amber-300 font-bold">hot wallet</span> — its keys live on a connected device, so it's less secure than the cold-stored
+                    <a href="donate.html" class="text-orange-400 hover:text-orange-300 transition-colors interactable">primary Monero wallet</a>.
+                    Fine for donations, but prefer the main address when you can.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── Note ── -->
+        <div class="mt-2 p-4 bg-black/30 border border-white/5 rounded-xl flex items-start gap-3 fade-in-delay-4">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <p class="text-slate-500 text-xs leading-relaxed">
+                Double-check the network before sending — most of these are transparent, public chains, and funds sent to the wrong network can be lost permanently. For maximum privacy, donate in
+                <a href="donate.html" class="text-orange-400 hover:text-orange-300 transition-colors interactable">Monero</a> instead.
+            </p>
+        </div>
+
+        <!-- ── Footer ── -->
+        <div class="mt-12 text-center fade-in-delay-4">
+            <p class="text-slate-600 text-[10px] uppercase tracking-[0.4em] mb-5 code-font">palmtree_technology / donate</p>
+            <div class="flex justify-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-sky-500/10 hover:border-sky-500/30 hover:text-white transition-all interactable">
+                    <i data-lucide="home" class="w-4 h-4 text-sky-400"></i> Home
+                </a>
+                <a href="donate.html" class="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-orange-500/10 hover:border-orange-500/30 hover:text-white transition-all interactable">
+                    <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-orange-400"></i> Monero & PGP
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('load', () => lucide.createIcons());
+
+        // ── Custom cursor ──
+        const dot   = document.getElementById('cursor-dot');
+        const shape = document.getElementById('cursor-shape');
+        const glow  = document.getElementById('cursor-glow');
+
+        window.addEventListener('mousemove', (e) => {
+            dot.style.left   = shape.style.left   = `${e.clientX}px`;
+            dot.style.top    = shape.style.top    = `${e.clientY}px`;
+            dot.style.transform = shape.style.transform = 'translate(-50%, -50%)';
+            glow.style.left  = `${e.clientX}px`;
+            glow.style.top   = `${e.clientY}px`;
+        });
+
+        document.querySelectorAll('.interactable, a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'));
+        });
+
+        // ── Toast ──
+        function showToast(msg, color = '#38bdf8') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.color = color;
+            t.style.borderColor = color + '55';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2200);
+        }
+
+        // ── Copy a wallet address ──
+        function copyAddr(elementId, label, color) {
+            const addr = document.getElementById(elementId).textContent.trim();
+            navigator.clipboard.writeText(addr)
+                .then(() => showToast(`✓ ${label} address copied`, color))
+                .catch(() => showToast('⚠ Copy failed — select manually', '#f87171'));
+        }
+    </script>
+</body>
+</html>
