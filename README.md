@@ -5,4 +5,4 @@ The about page for my website [palmtree.technology](https://palmtree.technology)
 - My bio
 - other awesome stuff 👍
 
-note: the onion site is temporarily down. sorry for the inconvinence
+note: the onion site is temporarily down. sorry for the inconvinence.
